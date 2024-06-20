@@ -1,0 +1,20 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: nginx
+  author: LLC "RusBITech-Astra"
+  company: LLC "RusBITech-Astra"
+  description: Install and configure nginx
+  license: MIT/BSD
+  min_ansible_version: 2.7
+  platforms:
+    - name: ALCE
+      versions:
+        - 2.12.29
+        - 2.12.44
+    - name: ALSE
+      versions:
+        - 1.7.1
+
+  galaxy_tags: []

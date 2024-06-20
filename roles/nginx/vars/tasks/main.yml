@@ -1,0 +1,72 @@
+---
+
+- name: Install required nginx version.
+  ansible.builtin.apt:
+    name: "{{ 'nginx=' ~ nginx_package_version if nginx_package_version != 'latest' else 'nginx' }}"
+    state: "{{ 'present' if nginx_package_version != 'latest' else 'latest' }}"
+    update_cache: true
+    cache_valid_time: 86400
+  register: result
+  retries: 6
+  delay: 30
+  until: result is not failed
+
+- name: Install modules
+  ansible.builtin.apt:
+    name: "libnginx-mod-{{ item }}"
+    state: present
+  when: nginx_install_modules
+  with_items: "{{ nginx_modules }}"
+
+# Vhost configuration.
+- ansible.builtin.import_tasks: vhosts.yml
+
+# Nginx setup.
+- name: Copy nginx configuration in place.
+  ansible.builtin.template:
+    src: "{{ nginx_conf_template }}"
+    dest: "{{ nginx_conf_file_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - reload nginx
+
+- name: Ensure nginx_service_config_path exists.
+  ansible.builtin.file:
+    path: "{{ nginx_custom_srv_conf_file_path | dirname }}"
+    state: directory
+
+- name: Copy nginx service config in place.
+  ansible.builtin.template:
+    src: "{{ nginx_srv_conf_template }}"
+    dest: "{{ nginx_custom_srv_conf_file_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - restart nginx
+  when: nginx_custom_srv_conf | length > 0
+
+- ansible.builtin.import_tasks: add_snippets.yml
+
+- name: Copy styled error pages
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /var/www/html/
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - 403.html
+    - 404.html
+    - 500.html
+    - underconstruction.html
+  notify:
+    - reload nginx
+
+- name: Ensure nginx service is running as configured.
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true

@@ -1,0 +1,14 @@
+---
+# vars file for nginx
+nginx_conf_path: /etc/nginx/conf.d
+nginx_conf_file_path: /etc/nginx/nginx.conf
+nginx_ssl_conf_path: /etc/nginx/ssl
+nginx_ssl_conf: ssl.conf
+nginx_mime_file_path: /etc/nginx/mime.types
+nginx_pidfile: /run/nginx.pid
+nginx_vhost_path: /etc/nginx/sites-enabled
+nginx_default_vhost_path: /etc/nginx/sites-enabled/default
+nginx_user: "www-data"
+nginx_modules_dir: /etc/nginx/modules-enabled/*.conf
+nginx_snippets_dir_path: /etc/nginx/snippets/
+nginx_custom_srv_conf_file_path: "/etc/systemd/system/nginx.service.d/custom.conf"

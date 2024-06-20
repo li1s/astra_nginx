@@ -1,0 +1,11 @@
+---
+- name: Add nginx snippets
+  ansible.builtin.copy:
+    content: "{{ item.value }}"
+    dest: "{{ nginx_snippets_dir_path }}{{ item.key }}"
+  loop: "{{ nginx_snippets | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  notify:
+    - reload nginx
+...
